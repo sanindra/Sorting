@@ -1,39 +1,44 @@
-# -*- coding: utf-8 -*-
 import timeit
+import random
+
+
 def timed(method):
     def timer(*args, **kwargs):
-        ts     = timeit.default_timer()
+        ts = timeit.default_timer()
         result = method(*args, **kwargs)
-        te     = timeit.default_timer()
+        te = timeit.default_timer()
         print '%r, %2.10f sec' % (method.__name__, te-ts)
         return result
     return timer
-    
+
+
 class Sorting(object):
     
     @timed
-    def selectionSort(self, a):
+    def selection_sort(self, a):
         for i in range(len(a)):
-            min = i
+            mi = i
             for j in range(i+1, len(a)):
-                if a[j] < a[min]:
-                    min = j
-            a[i], a[min] = a[min], a[i]
+                if a[j] < a[mi]:
+                    mi = j
+            a[i], a[mi] = a[mi], a[i]
         return a
     
     @timed
-    def insertionSort(self, a):
+    def insertion_sort(self, a):
         for i in xrange(len(a)):
             for j in xrange(i, 0, -1):
                 if a[j] < a[j-1]:
                     a[j], a[j-1] = a[j-1], a[j]
-                else: break
+                else:
+                    break
         return a
-    
-    def merge(self, left, right):
+
+    @staticmethod
+    def merge(left, right):
         i, j, res, m, n = 0, 0, [], len(left), len(right) 
-        while i< m and j<n:
-            if left[i]<right[j]:
+        while i < m and j < n:
+            if left[i] < right[j]:
                 res.append(left[i])
                 i += 1
             else:
@@ -43,21 +48,23 @@ class Sorting(object):
         res += (left[i:] + right[j:])
         return res
     
-    def mergeSort(self, a):
+    def merge_sort(self, a):
         k = len(a)
-        if k==1: return a
+        if k == 1:
+            return a
         m = k/2
-        return self.merge(self.mergeSort(a[:m]), self.mergeSort(a[m:]))
+        return self.merge(self.merge_sort(a[:m]), self.merge_sort(a[m:]))
     
-    def mergeSort2(self, a):
+    def merge_sort2(self, a):
         k = len(a)
-        if k < 2: return a
+        if k < 2:
+            return a
         half = k // 2
-        left = self.mergeSort2(a[:half])
-        right = self.mergeSort2(a[half:])
-        out =[]
+        left = self.merge_sort2(a[:half])
+        right = self.merge_sort2(a[half:])
+        out = []
         li, ri, m, n = 0, 0, len(left), len(right)
-        while li<m and ri<n:
+        while li < m and ri < n:
             if left[li] < right[ri]:
                 out.append(left[li])
                 li += 1
@@ -67,49 +74,48 @@ class Sorting(object):
         out += (left[li:] + right[ri:])
         return out
     
-    def quickSort(self, a):
-        if not a: return a
+    def quick_sort(self, a):
+        if not a:
+            return a
         pivot = a[random.choice(range(len(a)))]
-        head = self.quickSort([i for i in a if i < pivot])
-        tail = self.quickSort([i for i in a if i > pivot])
-        return head + [i for i in a if i==pivot] + tail
-    
-    
-    def quickSort2(self, a, first, last):
-        if first>=last: return
-        
+        head = self.quick_sort([i for i in a if i < pivot])
+        tail = self.quick_sort([i for i in a if i > pivot])
+        return head + [i for i in a if i == pivot] + tail
+
+    def quick_sort2(self, a, first, last):
+        if first >= last:
+            return
         i, j = first, last
         pivot = a[random.randint(first, last)]
         
-        while i<=j:
-            while a[i]<pivot:
-                i+=1
-            while a[j]>pivot:
-                j-=1
-            if i<=j:
+        while i <= j:
+            while a[i] < pivot:
+                i += 1
+            while a[j] > pivot:
+                j -= 1
+            if i <= j:
                 a[i], a[j] = a[j], a[i]
                 i, j = i+1, j-1
-        self.quickSort2(a, first, j)
-        self.quickSort2(a, i, last)
-    
-        
+        self.quick_sort2(a, first, j)
+        self.quick_sort2(a, i, last)
 
-s = Sorting()
-import random
-a = range(100000)
-random.shuffle(a)
+if __name__ == '__main__':
+    s = Sorting()
 
-#s.selectionSort(a)
-#s.insertionSort(a)
-st = timeit.default_timer()
-s.mergeSort(a)
-print timeit.default_timer()-st
-st = timeit.default_timer()
-s.mergeSort2(a)
-print timeit.default_timer()-st
-st = timeit.default_timer()
-s.quickSort(a)
-print timeit.default_timer()-st
-st = timeit.default_timer()
-s.quickSort2(a, 0, len(a)-1)
-print timeit.default_timer()-st
+    arr = range(100000)
+    random.shuffle(arr)
+
+    # s.selectionSort(a)
+    # s.insertionSort(a)
+    st = timeit.default_timer()
+    s.merge_sort(arr)
+    print timeit.default_timer()-st
+    st = timeit.default_timer()
+    s.merge_sort2(arr)
+    print timeit.default_timer()-st
+    st = timeit.default_timer()
+    s.quick_sort(arr)
+    print timeit.default_timer()-st
+    st = timeit.default_timer()
+    s.quick_sort2(arr, 0, len(arr)-1)
+    print timeit.default_timer()-st
