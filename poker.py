@@ -68,5 +68,5 @@ def two_pair(ranks):
         return None
 
 if __name__ == '__main__':
-    #print best_hand("6C 7C 8C 9C TC 5C JS".split())
+    print best_hand("6C 7C 8C 9C TC 5C JS".split())
     print (sorted(best_hand("TD TC TH 7C 7D 8C 8S".split())))
